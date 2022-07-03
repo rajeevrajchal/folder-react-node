@@ -1,13 +1,21 @@
 import moment from "moment";
 import Link from "next/link";
+import { useQuery } from "react-query";
 import Table from "../components/Table";
 import { callAxios } from "../plugins/axios.plugin";
 
-interface HomeProps {
-  files: any;
-}
-const Home = (props: HomeProps) => {
-  const { files } = props;
+const Home = () => {
+  const { isLoading, error, data } = useQuery(
+    "repoData",
+    async () =>
+      await callAxios({
+        method: "GET",
+        url: "files",
+      })
+  );
+
+  console.log("the data are", data);
+
   const columns = [
     {
       name: "File Name",
@@ -59,6 +67,10 @@ const Home = (props: HomeProps) => {
     },
   ];
 
+  if (isLoading) {
+    return <p>Loading</p>;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-8">
       <div>
@@ -66,22 +78,8 @@ const Home = (props: HomeProps) => {
           File system from your computer
         </p>
       </div>
-      <Table columns={columns} data={files || []} />
+      <Table columns={columns} data={data.files || []} />
     </div>
   );
 };
-
-export const getServerSideProps = async () => {
-  const res: any = await callAxios({
-    method: "GET",
-    url: "files",
-  });
-
-  return {
-    props: {
-      files: res?.data?.files || [],
-    },
-  };
-};
-
 export default Home;

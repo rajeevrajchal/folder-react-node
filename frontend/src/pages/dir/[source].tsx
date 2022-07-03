@@ -70,10 +70,6 @@ const Directory = (props: DirectoryProps) => {
 
 export const getServerSideProps = async (req: any) => {
   const { source } = req.query;
-  console.log("the source", {
-    source,
-  });
-
   const res: any = await callAxios({
     method: "GET",
     url: `files/directories/${source}`,
@@ -81,7 +77,7 @@ export const getServerSideProps = async (req: any) => {
 
   return {
     props: {
-      directories: res?.data?.directories || [],
+      directories: res?.directories || [],
     },
   };
 };
